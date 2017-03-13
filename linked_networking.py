@@ -8,8 +8,8 @@ password = sys.argv[2]
 
 class LinkedIn():
 
-    def __init__(self, username, password):
-        self.browser = webdriver.Chrome()
+    def __init__(self, browser, username, password):
+        self.browser = browser
         self.username = username
         self.password = password
 
@@ -40,6 +40,8 @@ class LinkedIn():
         time.sleep(2)
         self.network()
 
-networker = LinkedIn(username, password)
+if sys.platform == "darwin":
+    networker = LinkedIn(webdriver.Chrome(), username, password)
+else:
+    networker = LinkedIn(webdriver.PhantomJS(), username, password)
 networker.run()
-
