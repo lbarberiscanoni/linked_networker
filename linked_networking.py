@@ -1,5 +1,6 @@
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
+from random import randint
 import sys
 import time
 
@@ -29,11 +30,23 @@ class LinkedIn():
     def network(self):
         self.browser.get("https://www.linkedin.com/people/pymk?trk=nav_responsive_sub_nav_pymk")
         self.scrollToBottom()
-        connectionList = self.browser.find_elements_by_css_selector(".card-wrapper .image-wrapper .picture a")
-        for card in connectionList:
-            url = card.get_attribute("href")
-            self.browser.execute_script("window.open('" + str(url) + "');window.scrollBy(0, document.body.scrollHeight);")
+        connectionList = self.browser.find_elements_by_css_selector(".mn-person-info__picture.ember-view")
+        urlList = [ card.get_attribute("href") for card in connectionList ]
+        print len(connectionList), " connections found"
+        while len(urlList) > 0:
+            index = randint(0, len(urlList) - 1)
+            url = urlList[index]
+            urlList.pop(index)
+
+            self.browser.execute_script("window.open('" + str(url) + "');")
             time.sleep(2)
+            self.browser.execute_script("window.scrollBy(0, document.body.scrollHeight);")
+            time.sleep(2)
+
+            handles = self.browser.window_handles
+            self.browser.switch_to.window(handles[1])
+            self.browser.execute_script("window.close();")
+            self.browser.switch_to.window(handles[0])
 
     def run(self):
         self.login()
